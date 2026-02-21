@@ -1,0 +1,35 @@
+
+
+// Sparse Table 
+// Build O(N log N )
+// Query O(1)
+-----------------------------------------------------------
+
+vector < vector <int> > spt;
+void build( vector <int> &arr ){
+    int n = arr.size() ; 
+    int k = log2(n+1) + 1 ; 
+   
+    spt.clear();
+    spt.assign(n, vector<int>  (k, -1)) ; 
+
+    // making the sparse table first column of the table 
+    for(int i = 0 ; i< n ; i++ ){
+        spt[i][0] = arr[i] ; 
+    }
+
+    // building the rest of the columns 
+    for (int col  = 1 ; (1<<col ) <= n ; col++ ){
+
+        for(int row = 0 ; row + (1<< col ) <= n ; row++ ){
+            spt[row][col] = gcd(spt[row][col-1] , spt[row+ (1 << (col-1))][col -1 ]) ; 
+        }
+    }
+}
+
+int query(int l, int r ){
+    int col = log2(r-l +1 )  ; 
+    return gcd(spt[l][col], spt[r- (1<< col) +1 ][col] );
+}
+
+----------------------------------------------------------------
