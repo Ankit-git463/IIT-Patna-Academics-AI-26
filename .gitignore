@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.zip
+*.mp4
+*.pt
+*.pth
+*.h5
+*.pkl
+*.xlsx
+*.exe
+dataset/
