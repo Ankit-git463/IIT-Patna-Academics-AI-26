@@ -1,0 +1,5 @@
+Patient ID: 6539 | Age: 60 | Date: 2025-01-07 | Doctor: dr_verma
+Diagnoses: arthritis
+Medications: ibuprofen
+Procedures: xray, body scan
+Notes: Patient complains of chronic knee pain and stiffness especially in the morning. X-ray imaging indicates degenerative joint changes consistent with osteoarthritis. Ibuprofen prescribed for pain management. Patient advised physiotherapy and moderate exercise.

@@ -1,0 +1,6 @@
+Patient ID: 6551 | Age: 59 | Date: 2025-01-19 | Doctor: dr_kumar
+Diagnoses: arthritis
+Medications: ibuprofen
+Procedures: xray, body scan
+Notes: Patient presents with chronic hip pain and limited mobility. X-ray imaging suggests degenerative joint disease.
+

@@ -1,0 +1,5 @@
+Patient ID: 6536 | Age: 50 | Date: 2025-01-04 | Doctor: dr. ankit
+Diagnoses: diabetes, obesity, asthma
+Medications: insulin
+Procedures: biopsy, xray
+Notes: Patient presented with persistent fatigue, increased thirst, and shortness of breath during mild exertion. Clinical examination indicates uncontrolled diabetes with associated obesity and asthma history. Insulin therapy initiated. Patient advised on weight management, inhaler compliance, and blood sugar monitoring. Follow-up scheduled in two weeks.

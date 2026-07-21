@@ -1,0 +1,5 @@
+Patient ID: 6547 | Age: 62 | Date: 2025-01-15 | Doctor: dr_mehta
+Diagnoses: diabetes, hypertension
+Medications: insulin, amlodipine
+Procedures: blood test, ecg
+Notes: Patient presents with fatigue and elevated blood glucose and blood pressure readings. Combined diabetes and hypertension management initiated with insulin and amlodipine.

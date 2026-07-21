@@ -1,0 +1,5 @@
+Patient ID: 6542 | Age: 55 | Date: 2025-01-10 | Doctor: dr. gupta
+Diagnoses: diabetes
+Medications: metformin
+Procedures: blood test
+Notes: Patient reports excessive thirst and frequent urination. Blood glucose levels elevated during laboratory testing. Metformin initiated for glycemic control. Dietary modifications and daily physical activity strongly recommended.

@@ -1,0 +1,5 @@
+Patient ID: 6545 | Age: 58 | Date: 2025-01-13 | Doctor: dr_chatterjee
+Diagnoses: arthritis
+Medications: naproxen
+Procedures: xray, blood test
+Notes: Patient reports increasing pain and swelling in finger joints affecting daily activities. X-ray examination suggests inflammatory arthritis. Naproxen prescribed to reduce inflammation. Follow-up planned with rheumatology.

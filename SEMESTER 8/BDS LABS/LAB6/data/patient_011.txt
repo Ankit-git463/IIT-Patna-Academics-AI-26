@@ -1,0 +1,5 @@
+Patient ID: 6546 | Age: 41 | Date: 2025-01-14 | Doctor: dr. deepanshi
+Diagnoses: asthma
+Medications: budesonide inhaler
+Procedures: spirometry
+Notes: Patient reports persistent coughing and wheezing during physical activity. Spirometry confirms moderate airway obstruction. Budesonide inhaler prescribed for maintenance therapy.

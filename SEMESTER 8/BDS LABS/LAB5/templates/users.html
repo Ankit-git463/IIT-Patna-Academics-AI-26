@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+<h2>User Management</h2>
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">Back to Dashboard</a>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <h3>Add New User</h3>
+    <form method="POST" action="{{ url_for('add_user') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <select name="role">
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">Create User</button>
+    </form>
+</div>
+
+<h3>Existing Users</h3>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Created At</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.created_at }}</td>
+            <td>
+                {% if user.user_id != session['user_id'] %}
+                <form action="{{ url_for('delete_user', user_id=user.user_id) }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-danger btn-sm"
+                        onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+                {% else %}
+                <span class="text-muted">(You)</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

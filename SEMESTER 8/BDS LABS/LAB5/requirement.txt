@@ -1,0 +1,6 @@
+flask
+flask-mysql
+flask-bcrypt
+flask-wtf
+pymysql
+cryptography 

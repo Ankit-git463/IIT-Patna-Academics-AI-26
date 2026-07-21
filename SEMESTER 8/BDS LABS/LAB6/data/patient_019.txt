@@ -1,0 +1,5 @@
+Patient ID: 6554 | Age: 48 | Date: 2025-01-22 | Doctor: dr_nair
+Diagnoses: obesity
+Medications: orlistat
+Procedures: blood test
+Notes: Patient presents with obesity-related fatigue and elevated BMI. Lifestyle modification counseling provided.

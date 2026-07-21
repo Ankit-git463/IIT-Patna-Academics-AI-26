@@ -1,0 +1,5 @@
+Patient ID: 6552 | Age: 45 | Date: 2025-01-20 | Doctor: dr. deepanshi
+Diagnoses: allergy
+Medications: cetirizine
+Procedures: blood test
+Notes: Patient complains of seasonal sneezing and nasal irritation. Clinical findings consistent with allergic rhinitis.

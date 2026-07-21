@@ -1,0 +1,5 @@
+Patient ID: 6544 | Age: 52 | Date: 2025-01-12 | Doctor: dr_nair
+Diagnoses: allergy
+Medications: cetirizine
+Procedures: blood test
+Notes: Patient complains of sneezing, nasal congestion, and itchy eyes especially during morning hours. Clinical findings consistent with allergic rhinitis. Cetirizine prescribed. Environmental allergen avoidance recommended.

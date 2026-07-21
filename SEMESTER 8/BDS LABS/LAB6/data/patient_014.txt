@@ -1,0 +1,5 @@
+Patient ID: 6549 | Age: 57 | Date: 2025-01-17 | Doctor: dr_verma
+Diagnoses: thyroid disorder
+Medications: levothyroxine
+Procedures: blood test
+Notes: Patient complains of fatigue and weight gain. Thyroid function tests indicate hypothyroidism. Levothyroxine therapy initiated.

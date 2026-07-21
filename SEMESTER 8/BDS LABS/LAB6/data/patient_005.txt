@@ -1,0 +1,5 @@
+Patient ID: 6540 | Age: 47 | Date: 2025-01-08 | Doctor: dr_reddy
+Diagnoses: thyroid disorder
+Medications: levothyroxine
+Procedures: blood test, harmone test, bp test
+Notes: Patient reports fatigue, weight gain, and cold intolerance over several months. Blood tests reveal elevated TSH levels indicating hypothyroidism. Levothyroxine therapy started. Patient instructed to return for thyroid function reassessment in six weeks.

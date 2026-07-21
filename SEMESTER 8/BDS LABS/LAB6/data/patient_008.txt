@@ -1,0 +1,5 @@
+Patient ID: 6543 | Age: 49 | Date: 2025-01-11 | Doctor: dr_singh
+Diagnoses: hypertension, obesity
+Medications: losartan
+Procedures: ecg, blood test
+Notes: Patient with long-standing obesity presented for evaluation of persistent high blood pressure. ECG performed to assess cardiac rhythm. Losartan initiated. Counseling provided regarding weight reduction and cardiovascular risk management.

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<h2>Audit Logs</h2>
+<a href="{{ url_for('dashboard') }}" class="btn-primary">Back to Dashboard</a>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>User</th>
+      <th>Action</th>
+      <th>Table</th>
+      <th>Record ID</th>
+      <th>Timestamp</th>
+      <th>IP Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+      <td>{{ log.log_id }}</td>
+      <td>{{ log.username }}</td>
+      <td>{{ log.action }}</td>
+      <td>{{ log.table_name }}</td>
+      <td>{{ log.record_id }}</td>
+      <td>{{ log.timestamp }}</td>
+      <td>{{ log.ip_address }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="7">No logs found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

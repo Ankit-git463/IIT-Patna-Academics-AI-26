@@ -1,0 +1,5 @@
+Patient ID: 6553 | Age: 54 | Date: 2025-01-21 | Doctor: dr_singh
+Diagnoses: diabetes
+Medications: metformin
+Procedures: blood test, blood pressure , insulin test
+Notes: Patient diagnosed with type 2 diabetes following routine screening. Metformin prescribed.

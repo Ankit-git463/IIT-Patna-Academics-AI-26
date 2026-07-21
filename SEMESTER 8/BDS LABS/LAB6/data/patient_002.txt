@@ -1,0 +1,5 @@
+Patient ID: 6537 | Age: 44 | Date: 2025-01-05 | Doctor: dr. singh
+Diagnoses: hypertension, headache
+Medications: amlodipine
+Procedures: ecg, blood test
+Notes: Patient reported frequent headaches and dizziness over the past week. Blood pressure readings remained consistently elevated. ECG and blood tests conducted to evaluate cardiovascular status. Amlodipine prescribed. Patient advised to reduce salt intake and monitor blood pressure daily.

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Student Management</h3>
+        <p>Add, Edit, Delete, View Students</p>
+        <a href="{{ url_for('view_students') }}" class="btn-primary">Manage Students</a>
+    </div>
+
+    <div class="card">
+        <h3>User Management</h3>
+        <p>Manage system users and roles</p>
+        <a href="{{ url_for('manage_users') }}" class="btn-primary">Manage Users</a>
+    </div>
+
+    <div class="card">
+        <h3>Audit Logs</h3>
+        <p>View system activity logs</p>
+        <a href="{{ url_for('audit_logs') }}" class="btn-primary">View Logs</a>
+    </div>
+</div>
+{% endblock %}

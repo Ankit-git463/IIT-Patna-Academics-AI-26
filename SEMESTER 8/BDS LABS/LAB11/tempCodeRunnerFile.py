@@ -1,0 +1,1 @@
+  run_smpc(participant_names, private_inputs)

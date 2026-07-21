@@ -1,0 +1,5 @@
+Patient ID: 6548 | Age: 36 | Date: 2025-01-16 | Doctor: dr_patel
+Diagnoses: migraine
+Medications: sumatriptan
+Procedures: ct scan, blood test, harmone report
+Notes: Patient reports episodic headaches with visual aura and nausea. CT scan shows no structural abnormalities. Sumatriptan prescribed.

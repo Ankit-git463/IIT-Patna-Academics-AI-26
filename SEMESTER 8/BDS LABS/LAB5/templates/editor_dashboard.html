@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Editor Dashboard{% endblock %}
+
+{% block content %}
+<h2>Editor Dashboard</h2>
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Student Management</h3>
+        <p>Add, Edit, View Students (No Delete)</p>
+        <a href="{{ url_for('view_students') }}" class="btn-primary">Manage Students</a>
+    </div>
+</div>
+{% endblock %}

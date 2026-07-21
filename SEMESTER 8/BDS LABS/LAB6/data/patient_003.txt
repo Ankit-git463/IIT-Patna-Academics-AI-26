@@ -1,0 +1,5 @@
+Patient ID: 6538 | Age: 39 | Date: 2025-01-06 | Doctor: dr_patel
+Diagnoses: asthma
+Medications: salbutamol inhaler
+Procedures: spirometry, blood test
+Notes: Patient experienced recurrent wheezing and chest tightness particularly during nighttime. Spirometry confirmed reduced airflow consistent with asthma exacerbation. Salbutamol inhaler prescribed for symptom relief. Advised avoidance of known allergens and scheduled pulmonary review.

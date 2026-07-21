@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Viewer Dashboard{% endblock %}
+
+{% block content %}
+<h2>Viewer Dashboard</h2>
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>View Students</h3>
+        <p>Read-only access to student records</p>
+        <a href="{{ url_for('view_students') }}" class="btn-primary">View Students</a>
+    </div>
+</div>
+{% endblock %}

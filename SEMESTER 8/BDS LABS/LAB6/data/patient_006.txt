@@ -1,0 +1,5 @@
+Patient ID: 6541 | Age: 33 | Date: 2025-01-09 | Doctor: dr_kumar
+Diagnoses: migraine
+Medications: sumatriptan
+Procedures: ct scan
+Notes: Patient presented with severe unilateral headache accompanied by nausea and light sensitivity. CT scan performed to rule out structural abnormalities. Diagnosis consistent with migraine episodes. Sumatriptan prescribed for acute attacks.

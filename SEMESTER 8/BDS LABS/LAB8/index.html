@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JWT Access Control System</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --bg2: #ffffff;
+        --bg3: #eef0f4;
+        --panel: #ffffff;
+        --border: #dde1e9;
+        --border2: #c8cdd8;
+        --green: #0d9967;
+        --cyan: #0077cc;
+        --red: #d63045;
+        --yellow: #b87a00;
+        --purple: #7c3aed;
+        --text: #1e2533;
+        --dim: #8a93a6;
+        --dim2: #b0b8c8;
+        --shadow: 0 1px 4px rgba(0, 0, 0, 0.07), 0 4px 16px rgba(0, 0, 0, 0.05);
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Subtle dot grid */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(circle, #c8cdd8 1px, transparent 1px);
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.45;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Header */
+      header {
+        text-align: center;
+        padding: 10px 0 22px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      header h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: 2px;
+      }
+      header h1 span {
+        color: var(--cyan);
+      }
+      header p {
+        color: var(--dim);
+        font-size: 10px;
+        letter-spacing: 3px;
+        margin-top: 6px;
+        text-transform: uppercase;
+      }
+
+      /* Layout */
+      .layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Panels */
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .panel-header {
+        background: var(--bg3);
+        border-bottom: 1px solid var(--border);
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .panel-title {
+        font-family: "Syne", sans-serif;
+        font-size: 10px;
+        letter-spacing: 2px;
+        color: var(--text);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .dot.r {
+        background: #ff5f57;
+      }
+      .dot.y {
+        background: #febc2e;
+      }
+      .dot.g {
+        background: #28c840;
+      }
+
+      .controls {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .section-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+
+      .user-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .user-card {
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: var(--bg2);
+        position: relative;
+        box-shadow: var(--shadow-sm);
+      }
+      .user-card:hover {
+        border-color: var(--cyan);
+        background: #f0f7ff;
+      }
+      .user-card.selected {
+        border-color: var(--cyan);
+        background: #f0f7ff;
+        box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.12);
+      }
+      .user-card .name {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 12px;
+      }
+      .user-card .meta {
+        color: var(--dim);
+        font-size: 10px;
+        margin-top: 3px;
+      }
+      .user-card .role-badge {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .role-admin {
+        background: rgba(214, 48, 69, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(214, 48, 69, 0.3);
+      }
+      .role-editor {
+        background: rgba(124, 58, 237, 0.1);
+        color: var(--purple);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+      }
+      .role-viewer {
+        background: rgba(0, 119, 204, 0.1);
+        color: var(--cyan);
+        border: 1px solid rgba(0, 119, 204, 0.3);
+      }
+
+      .pass-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      input[type="text"],
+      input[type="password"] {
+        flex: 1;
+        background: var(--bg3);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 12px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      input:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.12);
+      }
+
+      .endpoint-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .ep-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: var(--bg2);
+        transition: all 0.15s;
+        text-align: left;
+        width: 100%;
+        font-family: inherit;
+        font-size: 11px;
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
+      }
+      .ep-btn:hover {
+        border-color: var(--cyan);
+        background: #f0f7ff;
+      }
+      .ep-btn.selected {
+        border-color: var(--cyan);
+        background: #f0f7ff;
+        box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.1);
+      }
+      .method {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 5px;
+        border-radius: 3px;
+        min-width: 34px;
+        text-align: center;
+      }
+      .GET {
+        background: rgba(13, 153, 103, 0.12);
+        color: var(--green);
+      }
+      .POST {
+        background: rgba(0, 119, 204, 0.12);
+        color: var(--cyan);
+      }
+      .PUT {
+        background: rgba(184, 122, 0, 0.12);
+        color: var(--yellow);
+      }
+      .DELETE {
+        background: rgba(214, 48, 69, 0.12);
+        color: var(--red);
+      }
+      .ep-path {
+        flex: 1;
+        color: #4a5568;
+      }
+      .ep-role {
+        font-size: 9px;
+        color: var(--dim);
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: all 0.18s;
+        letter-spacing: 1px;
+        width: 100%;
+        text-transform: uppercase;
+      }
+      .btn-primary {
+        background: var(--cyan);
+        color: #fff;
+        border: 1px solid var(--cyan);
+        box-shadow: 0 2px 8px rgba(0, 119, 204, 0.25);
+      }
+      .btn-primary:hover {
+        background: #0068b5;
+        box-shadow: 0 4px 12px rgba(0, 119, 204, 0.35);
+      }
+      .btn-danger {
+        background: rgba(214, 48, 69, 0.08);
+        border: 1px solid rgba(214, 48, 69, 0.4);
+        color: var(--red);
+      }
+      .btn-danger:hover {
+        background: rgba(214, 48, 69, 0.15);
+      }
+      .btn-warn {
+        background: rgba(184, 122, 0, 0.08);
+        border: 1px solid rgba(184, 122, 0, 0.35);
+        color: var(--yellow);
+      }
+      .btn-warn:hover {
+        background: rgba(184, 122, 0, 0.15);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-row .btn {
+        flex: 1;
+      }
+
+      /* Token display */
+      .token-box {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px;
+        font-size: 10px;
+        line-height: 1.6;
+        word-break: break-all;
+        color: var(--dim);
+        max-height: 80px;
+        overflow: auto;
+      }
+      .token-box.has-token {
+        color: #7c5a00;
+        border-color: rgba(184, 122, 0, 0.35);
+        background: #fffbf0;
+      }
+      .token-label {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 2px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .no-token-msg {
+        color: var(--dim2);
+        font-style: italic;
+      }
+
+      /* Status chips */
+      .status-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .chip-on {
+        background: rgba(13, 153, 103, 0.12);
+        color: var(--green);
+        border: 1px solid rgba(13, 153, 103, 0.3);
+      }
+      .chip-off {
+        background: rgba(214, 48, 69, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(214, 48, 69, 0.3);
+      }
+      .chip-dim {
+        background: var(--bg3);
+        color: var(--dim);
+        border: 1px solid var(--border2);
+      }
+
+      /* Terminal */
+      .terminal {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 1100px;
+      }
+      .terminal-body {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        font-size: 12px;
+        line-height: 1.7;
+        max-height: calc(100vh - 200px);
+        min-height: 1100px;
+        background: #fafbfc;
+      }
+      .terminal-body::-webkit-scrollbar {
+        width: 5px;
+      }
+      .terminal-body::-webkit-scrollbar-track {
+        background: var(--bg3);
+      }
+      .terminal-body::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+
+      /* Log entries */
+      .log-entry {
+        margin-bottom: 16px;
+        animation: fadeIn 0.25s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(3px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .log-section {
+        border-left: 3px solid var(--cyan);
+        padding: 10px 14px;
+        background: #f0f7ff;
+        border-radius: 0 7px 7px 0;
+        margin-bottom: 8px;
+        border-top: 1px solid rgba(0, 119, 204, 0.12);
+        border-right: 1px solid rgba(0, 119, 204, 0.12);
+        border-bottom: 1px solid rgba(0, 119, 204, 0.12);
+      }
+      .log-section.error {
+        border-left-color: var(--red);
+        background: rgba(214, 48, 69, 0.04);
+        border-color: rgba(214, 48, 69, 0.12);
+        border-left-color: var(--red);
+      }
+      .log-section.success {
+        border-left-color: var(--green);
+        background: rgba(13, 153, 103, 0.04);
+        border-color: rgba(13, 153, 103, 0.12);
+        border-left-color: var(--green);
+      }
+      .log-section.warn {
+        border-left-color: var(--yellow);
+        background: rgba(184, 122, 0, 0.05);
+        border-color: rgba(184, 122, 0, 0.12);
+        border-left-color: var(--yellow);
+      }
+
+      .log-title {
+        font-family: "Syne", sans-serif;
+        font-size: 10px;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        color: var(--cyan);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .log-title.error {
+        color: var(--red);
+      }
+      .log-title.success {
+        color: var(--green);
+      }
+      .log-title.warn {
+        color: var(--yellow);
+      }
+
+      .log-line {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .log-key {
+        color: var(--dim);
+        min-width: 120px;
+        flex-shrink: 0;
+      }
+      .log-val {
+        color: var(--text);
+        word-break: break-all;
+      }
+      .log-val.token-str {
+        color: #7c5a00;
+        font-size: 10px;
+      }
+      .log-val.green {
+        color: var(--green);
+      }
+      .log-val.red {
+        color: var(--red);
+      }
+      .log-val.cyan {
+        color: var(--cyan);
+      }
+      .log-val.purple {
+        color: var(--purple);
+      }
+
+      .check-line {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 2px 0;
+        color: var(--text);
+      }
+      .check {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        flex-shrink: 0;
+      }
+      .check.ok {
+        background: rgba(13, 153, 103, 0.15);
+        color: var(--green);
+      }
+      .check.fail {
+        background: rgba(214, 48, 69, 0.15);
+        color: var(--red);
+      }
+
+      .json-block {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin: 6px 0;
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+      .jk {
+        color: #0055aa;
+      }
+      .jv {
+        color: #7c5a00;
+      }
+      .js {
+        color: #0d7a52;
+      }
+      .jn {
+        color: #7c3aed;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px dashed var(--border2);
+        margin: 16px 0;
+      }
+      .timestamp {
+        color: var(--dim);
+        font-size: 10px;
+      }
+
+      .decode-section {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 12px;
+        margin-top: 8px;
+        box-shadow: var(--shadow-sm);
+      }
+      .decode-title {
+        font-size: 9px;
+        color: var(--dim);
+        letter-spacing: 2px;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+      }
+      .token-parts {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .tp {
+        font-size: 10px;
+        padding: 3px 6px;
+        border-radius: 3px;
+        word-break: break-all;
+      }
+      .tp.header-p {
+        color: #c05a00;
+        background: rgba(192, 90, 0, 0.08);
+      }
+      .tp.payload-p {
+        color: var(--green);
+        background: rgba(13, 153, 103, 0.08);
+      }
+      .tp.sig-p {
+        color: var(--cyan);
+        background: rgba(0, 119, 204, 0.08);
+      }
+      .sep {
+        color: var(--dim2);
+        padding-top: 3px;
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+        color: var(--dim2);
+        gap: 12px;
+      }
+      .empty-icon {
+        font-size: 40px;
+        opacity: 0.25;
+      }
+      .empty-text {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-align: center;
+        color: var(--dim);
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg3);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>JWT <span>ACCESS CONTROL</span> SYSTEM</h1>
+        <p>
+          Distributed Authentication System · Role-Based Control · Token
+          Management
+        </p>
+      </header>
+
+      <div class="layout">
+        <!-- LEFT: Controls -->
+        <div>
+          <!-- User Select -->
+          <div class="panel" style="margin-bottom: 12px">
+            <div class="panel-header">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <span class="panel-title">User Credentials</span>
+            </div>
+            <div class="controls">
+              <div>
+                <div class="section-label">Select User</div>
+                <div class="user-cards" id="userCards">
+                  <div
+                    class="user-card selected"
+                    data-user="ankit_editor"
+                    onclick="selectUser('ankit_editor')"
+                  >
+                    <div class="name">Ankit Editor</div>
+                    <div class="meta">ankit_editor / pass123</div>
+                    <span class="role-badge role-editor">EDITOR</span>
+                  </div>
+                  <div
+                    class="user-card"
+                    data-user="ankit_admin"
+                    onclick="selectUser('ankit_admin')"
+                  >
+                    <div class="name">Ankit Admin</div>
+                    <div class="meta">ankit_admin / pass456</div>
+                    <span class="role-badge role-admin">ADMIN</span>
+                  </div>
+                  <div
+                    class="user-card"
+                    data-user="ankit_viewer"
+                    onclick="selectUser('ankit_viewer')"
+                  >
+                    <div class="name">Ankit Viewer</div>
+                    <div class="meta">ankit_viewer / pass789</div>
+                    <span class="role-badge role-viewer">VIEWER</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="section-label">Password</div>
+                <div class="pass-row">
+                  <input
+                    type="password"
+                    id="passwordInput"
+                    value="pass123"
+                    placeholder="Enter password"
+                  />
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="doLogin()">
+                ⬢ Login &amp; Get Tokens
+              </button>
+            </div>
+          </div>
+
+          <!-- Token Status -->
+          <div class="panel" style="margin-bottom: 12px">
+            <div class="panel-header">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <span class="panel-title">Token Status</span>
+            </div>
+            <div class="controls">
+              <div>
+                <div class="section-label">Session</div>
+                <div class="status-row" id="statusChips">
+                  <span class="chip chip-dim">NOT LOGGED IN</span>
+                </div>
+              </div>
+              <div>
+                <div class="token-label">Access Token</div>
+                <div class="token-box" id="accessTokenBox">
+                  <span class="no-token-msg">No active token</span>
+                </div>
+              </div>
+              <div>
+                <div class="token-label">Refresh Token</div>
+                <div class="token-box" id="refreshTokenBox">
+                  <span class="no-token-msg">No refresh token</span>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button
+                  class="btn btn-warn"
+                  onclick="doRefresh()"
+                  id="btnRefresh"
+                  disabled
+                >
+                  ↺ Refresh
+                </button>
+                <button
+                  class="btn btn-danger"
+                  onclick="doLogout()"
+                  id="btnLogout"
+                  disabled
+                >
+                  ⊗ Logout
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Endpoint Test -->
+          <div class="panel">
+            <div class="panel-header">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <span class="panel-title">API Endpoints</span>
+            </div>
+            <div class="controls">
+              <div>
+                <div class="section-label">Select Endpoint to Test</div>
+                <div class="endpoint-list" id="endpointList">
+                  <button
+                    class="ep-btn selected"
+                    data-ep="0"
+                    onclick="selectEndpoint(0)"
+                  >
+                    <span class="method GET">GET</span>
+                    <span class="ep-path">/api/students</span>
+                    <span class="ep-role">viewer+</span>
+                  </button>
+                  <button
+                    class="ep-btn"
+                    data-ep="1"
+                    onclick="selectEndpoint(1)"
+                  >
+                    <span class="method POST">POST</span>
+                    <span class="ep-path">/api/students</span>
+                    <span class="ep-role">editor+</span>
+                  </button>
+                  <button
+                    class="ep-btn"
+                    data-ep="2"
+                    onclick="selectEndpoint(2)"
+                  >
+                    <span class="method PUT">PUT</span>
+                    <span class="ep-path">/api/students/:id</span>
+                    <span class="ep-role">editor+</span>
+                  </button>
+                  <button
+                    class="ep-btn"
+                    data-ep="3"
+                    onclick="selectEndpoint(3)"
+                  >
+                    <span class="method DELETE">DELETE</span>
+                    <span class="ep-path">/api/students/:id</span>
+                    <span class="ep-role">admin</span>
+                  </button>
+                  <button
+                    class="ep-btn"
+                    data-ep="4"
+                    onclick="selectEndpoint(4)"
+                  >
+                    <span class="method GET">GET</span>
+                    <span class="ep-path">/api/admin/users</span>
+                    <span class="ep-role">admin</span>
+                  </button>
+                </div>
+              </div>
+              <button
+                class="btn btn-primary"
+                onclick="doRequest()"
+                id="btnRequest"
+              >
+                ▶ Send Request
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Terminal -->
+        <div class="panel terminal">
+          <div class="panel-header">
+            <div class="dot r"></div>
+            <div class="dot y"></div>
+            <div class="dot g"></div>
+            <span class="panel-title">System Terminal</span>
+            <span
+              style="margin-left: auto; font-size: 10px; color: var(--dim)"
+              id="reqCount"
+              >0 requests</span
+            >
+            <button
+              onclick="clearTerminal()"
+              style="
+                margin-left: 8px;
+                background: var(--bg3);
+                border: 1px solid var(--border2);
+                color: var(--dim);
+                padding: 2px 8px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-family: inherit;
+                font-size: 10px;
+                transition: background 0.15s;
+              "
+              onmouseover="this.style.background='var(--border)'"
+              onmouseout="this.style.background='var(--bg3)'"
+            >
+              Clear
+            </button>
+          </div>
+          <div class="terminal-body" id="terminal">
+            <div class="empty-state">
+              <div class="empty-icon">⬡</div>
+              <div class="empty-text">
+                JWT Lab Initialized<br />Select a user and login to begin
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ─── Configuration ───────────────────────────────────────────────────
+      const SECRET_KEY = "jwt-lab-secret-key-2024-distributed-systems";
+      const ACCESS_EXPIRY = 15 * 60;
+      const REFRESH_EXPIRY = 7 * 24 * 3600;
+
+      const USERS = {
+        ankit_editor: {
+          id: "user123",
+          name: "Ankit Editor",
+          role: "editor",
+          password: "pass123",
+        },
+        ankit_admin: {
+          id: "user456",
+          name: "Ankit Admin",
+          role: "admin",
+          password: "pass456",
+        },
+        ankit_viewer: {
+          id: "user789",
+          name: "Ankit Viewer",
+          role: "viewer",
+          password: "pass789",
+        },
+      };
+
+      const ENDPOINTS = [
+        {
+          method: "GET",
+          path: "/api/students",
+          roles: ["viewer", "editor", "admin"],
+          desc: "Get all students",
+        },
+        {
+          method: "POST",
+          path: "/api/students",
+          roles: ["editor", "admin"],
+          desc: "Create student",
+        },
+        {
+          method: "PUT",
+          path: "/api/students/:id",
+          roles: ["editor", "admin"],
+          desc: "Update student",
+        },
+        {
+          method: "DELETE",
+          path: "/api/students/:id",
+          roles: ["admin"],
+          desc: "Delete student",
+        },
+        {
+          method: "GET",
+          path: "/api/admin/users",
+          roles: ["admin"],
+          desc: "List all users",
+        },
+      ];
+
+      const MOCK_DATA = {
+        students: [
+          { id: "s001", name: "Riya Sharma", roll: "CS101", grade: "A" },
+          { id: "s002", name: "Arjun Mehta", roll: "CS102", grade: "B+" },
+          { id: "s003", name: "Priya Nair", roll: "CS103", grade: "A-" },
+        ],
+        users: [
+          { id: "user123", name: "Ankit Editor", role: "editor" },
+          { id: "user456", name: "Ankit Admin", role: "admin" },
+          { id: "user789", name: "Ankit Viewer", role: "viewer" },
+        ],
+      };
+
+      let state = {
+        selectedUser: "ankit_editor",
+        accessToken: null,
+        refreshToken: null,
+        blacklist: new Set(),
+        revokedRefresh: new Set(),
+        loggedIn: false,
+        selectedEndpoint: 0,
+        reqCount: 0,
+      };
+
+      function b64url(str) {
+        return btoa(str)
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=/g, "");
+      }
+      function b64urlDecode(str) {
+        str = str.replace(/-/g, "+").replace(/_/g, "/");
+        while (str.length % 4) str += "=";
+        return atob(str);
+      }
+
+      async function signJWT(header, payload) {
+        const enc = new TextEncoder();
+        const keyData = enc.encode(SECRET_KEY);
+        const key = await crypto.subtle.importKey(
+          "raw",
+          keyData,
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+        const message =
+          b64url(JSON.stringify(header)) +
+          "." +
+          b64url(JSON.stringify(payload));
+        const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+        const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)))
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=/g, "");
+        return message + "." + sigB64;
+      }
+
+      async function verifyJWT(token) {
+        const parts = token.split(".");
+        if (parts.length !== 3)
+          return { valid: false, error: "Malformed token" };
+        try {
+          const enc = new TextEncoder();
+          const keyData = enc.encode(SECRET_KEY);
+          const key = await crypto.subtle.importKey(
+            "raw",
+            keyData,
+            { name: "HMAC", hash: "SHA-256" },
+            false,
+            ["verify"]
+          );
+          const message = parts[0] + "." + parts[1];
+          const sigBytes = Uint8Array.from(
+            atob(parts[2].replace(/-/g, "+").replace(/_/g, "/")),
+            (c) => c.charCodeAt(0)
+          );
+          const valid = await crypto.subtle.verify(
+            "HMAC",
+            key,
+            sigBytes,
+            enc.encode(message)
+          );
+          if (!valid) return { valid: false, error: "Invalid signature" };
+          const payload = JSON.parse(b64urlDecode(parts[1]));
+          return { valid: true, payload };
+        } catch (e) {
+          return { valid: false, error: "Verification error" };
+        }
+      }
+
+      function genJTI() {
+        return Array.from(crypto.getRandomValues(new Uint8Array(5)))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      async function createTokens(user) {
+        const now = Math.floor(Date.now() / 1000);
+        const header = { alg: "HS256", typ: "JWT" };
+        const accessPayload = {
+          sub: user.id,
+          name: user.name,
+          role: user.role,
+          iat: now,
+          exp: now + ACCESS_EXPIRY,
+          jti: genJTI(),
+        };
+        const refreshPayload = {
+          sub: user.id,
+          type: "refresh",
+          iat: now,
+          exp: now + REFRESH_EXPIRY,
+          jti: genJTI(),
+        };
+        const access = await signJWT(header, accessPayload);
+        const refresh = await signJWT(header, refreshPayload);
+        return { access, refresh, accessPayload, refreshPayload };
+      }
+
+      function decodePayload(token) {
+        try {
+          return JSON.parse(b64urlDecode(token.split(".")[1]));
+        } catch {
+          return null;
+        }
+      }
+
+      function fmtTime(ts) {
+        return new Date(ts * 1000).toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      }
+
+      function selectUser(u) {
+        state.selectedUser = u;
+        document
+          .querySelectorAll(".user-card")
+          .forEach((c) => c.classList.remove("selected"));
+        document.querySelector(`[data-user="${u}"]`).classList.add("selected");
+        const passwords = {
+          ankit_editor: "pass123",
+          ankit_admin: "pass456",
+          ankit_viewer: "pass789",
+        };
+        document.getElementById("passwordInput").value = passwords[u];
+      }
+
+      function selectEndpoint(i) {
+        state.selectedEndpoint = i;
+        document
+          .querySelectorAll(".ep-btn")
+          .forEach((b) => b.classList.remove("selected"));
+        document.querySelector(`[data-ep="${i}"]`).classList.add("selected");
+      }
+
+      function updateTokenUI() {
+        const atb = document.getElementById("accessTokenBox");
+        const rtb = document.getElementById("refreshTokenBox");
+        const chips = document.getElementById("statusChips");
+        if (state.accessToken) {
+          atb.className = "token-box has-token";
+          atb.textContent = state.accessToken;
+          rtb.className = "token-box has-token";
+          rtb.textContent = state.refreshToken;
+          const p = decodePayload(state.accessToken);
+          const blacklisted = state.blacklist.has(state.accessToken);
+          chips.innerHTML = `
+      <span class="chip ${blacklisted ? "chip-off" : "chip-on"}">${
+            blacklisted ? "BLACKLISTED" : "ACTIVE"
+          }</span>
+      <span class="chip chip-on">${p.role.toUpperCase()}</span>
+      <span class="chip chip-dim">${p.name.split(" ")[0]}</span>`;
+          document.getElementById("btnRefresh").disabled = false;
+          document.getElementById("btnLogout").disabled = false;
+        } else {
+          atb.className = "token-box";
+          atb.innerHTML = '<span class="no-token-msg">No active token</span>';
+          rtb.className = "token-box";
+          rtb.innerHTML = '<span class="no-token-msg">No refresh token</span>';
+          chips.innerHTML = '<span class="chip chip-dim">NOT LOGGED IN</span>';
+          document.getElementById("btnRefresh").disabled = true;
+          document.getElementById("btnLogout").disabled = true;
+        }
+      }
+
+      function clearTerminal() {
+        document.getElementById("terminal").innerHTML = `
+    <div class="empty-state"><div class="empty-icon">⬡</div><div class="empty-text">Terminal Cleared<br>Ready for input</div></div>`;
+      }
+
+      function addLog(html) {
+        const t = document.getElementById("terminal");
+        t.querySelectorAll(".empty-state").forEach((e) => e.remove());
+        const div = document.createElement("div");
+        div.className = "log-entry";
+        div.innerHTML = html;
+        t.appendChild(div);
+        t.scrollTop = t.scrollHeight;
+        state.reqCount++;
+        document.getElementById("reqCount").textContent =
+          state.reqCount + " requests";
+      }
+
+      function jsonHtml(obj) {
+        return JSON.stringify(obj, null, 2)
+          .replace(/"([^"]+)":/g, '<span class="jk">"$1"</span>:')
+          .replace(/: "([^"]+)"/g, ': <span class="js">"$1"</span>')
+          .replace(/: (\d+)/g, ': <span class="jn">$1</span>')
+          .replace(/: (true|false)/g, ': <span class="jn">$1</span>');
+      }
+
+      function shortToken(t) {
+        if (!t) return "N/A";
+        return t.substring(0, 30) + "..." + t.substring(t.length - 10);
+      }
+
+      function splitTokenParts(token) {
+        const parts = token.split(".");
+        return `<div class="token-parts">
+    <span class="tp header-p">${parts[0]}</span>
+    <span class="sep">.</span>
+    <span class="tp payload-p">${parts[1]}</span>
+    <span class="sep">.</span>
+    <span class="tp sig-p">${parts[2]}</span>
+  </div>`;
+      }
+
+      async function doLogin() {
+        const user = USERS[state.selectedUser];
+        const password = document.getElementById("passwordInput").value;
+        const now = new Date();
+        let html = `
+    <div class="log-section">
+      <div class="log-title">⬢ Login Request</div>
+      <div class="log-line"><span class="log-key">Endpoint</span><span class="log-val cyan">POST /api/auth/login</span></div>
+      <div class="log-line"><span class="log-key">Timestamp</span><span class="log-val timestamp">${now.toLocaleTimeString()}</span></div>
+      <div class="log-line"><span class="log-key">Username</span><span class="log-val">${
+        state.selectedUser
+      }</span></div>
+      <div class="log-line"><span class="log-key">Password</span><span class="log-val">${"*".repeat(
+        password.length
+      )}</span></div>
+    </div>`;
+        if (password !== user.password) {
+          html += `<div class="log-section error">
+      <div class="log-title error">✗ Authentication Failed</div>
+      <div class="check-line"><div class="check fail">✗</div><span>Invalid credentials for user "${
+        state.selectedUser
+      }"</span></div>
+      <div class="json-block">${jsonHtml({
+        error: "Invalid credentials",
+        status: 401,
+      })}</div>
+    </div>`;
+          addLog(html);
+          return;
+        }
+        const { access, refresh, accessPayload, refreshPayload } =
+          await createTokens(user);
+        state.accessToken = access;
+        state.refreshToken = refresh;
+        state.loggedIn = true;
+        updateTokenUI();
+        html += `
+    <div class="log-section success">
+      <div class="log-title success">✓ Authentication Success</div>
+      <div class="check-line"><div class="check ok">✓</div><span>Credentials verified for ${
+        user.name
+      }</span></div>
+      <div class="check-line"><div class="check ok">✓</div><span>Access token generated (15 min expiry)</span></div>
+      <div class="check-line"><div class="check ok">✓</div><span>Refresh token generated (7 day expiry)</span></div>
+    </div>
+    <div class="decode-section">
+      <div class="decode-title">Token Structure</div>
+      <div style="margin-bottom:6px;font-size:10px;color:var(--dim)">
+        <span style="color:#c05a00">■ Header</span> &nbsp;
+        <span style="color:var(--green)">■ Payload</span> &nbsp;
+        <span style="color:var(--cyan)">■ Signature</span>
+      </div>
+      ${splitTokenParts(access)}
+      <div style="margin-top:8px;font-size:11px;color:var(--dim)">Decoded Payload</div>
+      <div class="json-block">${jsonHtml(accessPayload)}</div>
+    </div>
+    <div class="log-section success">
+      <div class="log-title success">Response 200 OK</div>
+      <div class="json-block">${jsonHtml({
+        status: "success",
+        access_token: shortToken(access),
+        refresh_token: shortToken(refresh),
+        expires_in: 900,
+        user: { id: user.id, name: user.name, role: user.role },
+      })}</div>
+    </div>`;
+        addLog(html);
+      }
+
+      async function doRequest() {
+        const ep = ENDPOINTS[state.selectedEndpoint];
+        const now = new Date();
+        let html = `
+    <div class="log-section">
+      <div class="log-title">▶ API Request</div>
+      <div class="log-line"><span class="log-key">Endpoint</span><span class="log-val cyan">${
+        ep.method
+      } ${ep.path}</span></div>
+      <div class="log-line"><span class="log-key">Description</span><span class="log-val">${
+        ep.desc
+      }</span></div>
+      <div class="log-line"><span class="log-key">Timestamp</span><span class="log-val timestamp">${now.toLocaleTimeString()}</span></div>`;
+        if (!state.accessToken) {
+          html += `</div><div class="log-section error">
+      <div class="log-title error">✗ 401 Unauthorized</div>
+      <div class="check-line"><div class="check fail">✗</div><span>No Authorization header provided</span></div>
+      <div class="json-block">${jsonHtml({
+        error: "Missing token",
+        status: 401,
+      })}</div>
+    </div>`;
+          addLog(html);
+          return;
+        }
+        html += `<div class="log-line"><span class="log-key">Auth Header</span><span class="log-val token-str">Bearer ${shortToken(
+          state.accessToken
+        )}</span></div></div>`;
+        const result = await verifyJWT(state.accessToken);
+        const payload = result.payload;
+        const nowTs = Math.floor(Date.now() / 1000);
+        const blacklisted = state.blacklist.has(state.accessToken);
+        const expired = payload ? payload.exp < nowTs : true;
+        const hasRole = payload ? ep.roles.includes(payload.role) : false;
+        const allOk = result.valid && !expired && hasRole && !blacklisted;
+        html += `<div class="log-section ${
+          !result.valid || expired || blacklisted || !hasRole
+            ? "error"
+            : "success"
+        }">
+    <div class="log-title ${
+      !result.valid || expired || blacklisted || !hasRole ? "error" : "success"
+    }">Token Validation</div>
+    <div class="check-line"><div class="check ${
+      result.valid ? "ok" : "fail"
+    }">${result.valid ? "✓" : "✗"}</div><span>${
+          result.valid
+            ? "Signature valid (HMAC-SHA256 verified)"
+            : "Invalid signature"
+        }</span></div>`;
+        if (result.valid && payload) {
+          html += `<div class="check-line"><div class="check ${
+            !expired ? "ok" : "fail"
+          }">${!expired ? "✓" : "✗"}</div><span>${
+            !expired
+              ? `Not expired — issued: ${fmtTime(payload.iat)}, exp: ${fmtTime(
+                  payload.exp
+                )}`
+              : `Token expired at ${fmtTime(payload.exp)}`
+          }</span></div>`;
+          html += `<div class="check-line"><div class="check ${
+            hasRole ? "ok" : "fail"
+          }">${hasRole ? "✓" : "✗"}</div><span>${
+            hasRole
+              ? `Role "${payload.role}" has permission for ${ep.method} ${ep.path}`
+              : `Role "${payload.role}" cannot access ${
+                  ep.path
+                } (requires: ${ep.roles.join("/")})`
+          }</span></div>`;
+          html += `<div class="check-line"><div class="check ${
+            !blacklisted ? "ok" : "fail"
+          }">${!blacklisted ? "✓" : "✗"}</div><span>${
+            !blacklisted
+              ? "Token not in blacklist"
+              : "Token is blacklisted (logged out)"
+          }</span></div>`;
+        }
+        html += "</div>";
+        if (allOk) {
+          let data;
+          if (ep.path.includes("admin/users")) data = MOCK_DATA.users;
+          else if (ep.method === "GET") data = MOCK_DATA.students;
+          else if (ep.method === "POST")
+            data = {
+              id: `s00${Date.now() % 100}`,
+              name: "New Student",
+              roll: "CS200",
+              grade: "N/A",
+              message: "Student created",
+            };
+          else if (ep.method === "PUT")
+            data = {
+              id: "s001",
+              name: "Updated Student",
+              roll: "CS101",
+              grade: "A+",
+              message: "Updated",
+            };
+          else data = { message: "Student deleted successfully", id: "s001" };
+          html += `<div class="log-section success"><div class="log-title success">Response 200 OK</div><div class="json-block">${jsonHtml(
+            {
+              status: "success",
+              data,
+              user: { name: payload.name, role: payload.role },
+            }
+          )}</div></div>`;
+        } else if (!result.valid || blacklisted || expired) {
+          const reason = !result.valid
+            ? "Invalid token"
+            : blacklisted
+            ? "Token has been revoked"
+            : "Token expired";
+          html += `<div class="log-section error"><div class="log-title error">Response 401 Unauthorized</div><div class="json-block">${jsonHtml(
+            { error: reason, status: 401 }
+          )}</div></div>`;
+        } else {
+          html += `<div class="log-section error"><div class="log-title error">Response 403 Forbidden</div><div class="json-block">${jsonHtml(
+            {
+              error: "Insufficient permissions",
+              required_role: ep.roles.join(" or "),
+              user_role: payload.role,
+              status: 403,
+            }
+          )}</div></div>`;
+        }
+        addLog(html);
+      }
+
+      async function doRefresh() {
+        const now = new Date();
+        let html = `
+    <div class="log-section warn">
+      <div class="log-title warn">↺ Token Refresh Request</div>
+      <div class="log-line"><span class="log-key">Endpoint</span><span class="log-val cyan">POST /api/auth/refresh</span></div>
+      <div class="log-line"><span class="log-key">Timestamp</span><span class="log-val timestamp">${now.toLocaleTimeString()}</span></div>
+      <div class="log-line"><span class="log-key">Refresh Token</span><span class="log-val token-str">${shortToken(
+        state.refreshToken
+      )}</span></div>
+    </div>`;
+        const result = await verifyJWT(state.refreshToken);
+        const revoked = state.revokedRefresh.has(state.refreshToken);
+        const expired = result.payload
+          ? result.payload.exp < Math.floor(Date.now() / 1000)
+          : true;
+        html += `<div class="log-section ${
+          !result.valid || revoked || expired ? "error" : "success"
+        }">
+    <div class="log-title">Refresh Token Validation</div>
+    <div class="check-line"><div class="check ${
+      result.valid ? "ok" : "fail"
+    }">${result.valid ? "✓" : "✗"}</div><span>${
+          result.valid
+            ? "Refresh token signature valid"
+            : "Invalid token signature"
+        }</span></div>
+    <div class="check-line"><div class="check ${!expired ? "ok" : "fail"}">${
+          !expired ? "✓" : "✗"
+        }</div><span>${
+          !expired ? "Token not expired (7 day window)" : "Token expired"
+        }</span></div>
+    <div class="check-line"><div class="check ${!revoked ? "ok" : "fail"}">${
+          !revoked ? "✓" : "✗"
+        }</div><span>${
+          !revoked ? "Token not revoked" : "Token has been revoked (logout)"
+        }</span></div>
+  </div>`;
+        if (result.valid && !revoked && !expired) {
+          const user = USERS[state.selectedUser];
+          const { access, accessPayload } = await createTokens(user);
+          state.accessToken = access;
+          updateTokenUI();
+          html += `<div class="log-section success">
+      <div class="log-title success">Response 200 — New Access Token Issued</div>
+      <div class="json-block">${jsonHtml({
+        access_token: shortToken(access),
+        expires_in: 900,
+        issued_at: new Date().toISOString(),
+      })}</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--dim)">Decoded New Payload</div>
+      <div class="json-block">${jsonHtml(accessPayload)}</div>
+    </div>`;
+        } else {
+          html += `<div class="log-section error">
+      <div class="log-title error">Response 401 — Refresh Failed</div>
+      <div class="json-block">${jsonHtml({
+        error: revoked
+          ? "Refresh token revoked"
+          : "Invalid or expired refresh token",
+        status: 401,
+      })}</div>
+    </div>`;
+        }
+        addLog(html);
+      }
+
+      async function doLogout() {
+        const now = new Date();
+        const token = state.accessToken;
+        const refresh = state.refreshToken;
+        state.blacklist.add(token);
+        state.revokedRefresh.add(refresh);
+        updateTokenUI();
+        const payload = decodePayload(token);
+        addLog(`
+    <div class="log-section error">
+      <div class="log-title error">⊗ Logout Request</div>
+      <div class="log-line"><span class="log-key">Endpoint</span><span class="log-val cyan">POST /api/auth/logout</span></div>
+      <div class="log-line"><span class="log-key">Timestamp</span><span class="log-val timestamp">${now.toLocaleTimeString()}</span></div>
+      <div class="log-line"><span class="log-key">User</span><span class="log-val">${
+        payload ? payload.name : "Unknown"
+      }</span></div>
+      <div class="log-line"><span class="log-key">Token JTI</span><span class="log-val purple">${
+        payload ? payload.jti : "N/A"
+      }</span></div>
+    </div>
+    <div class="log-section">
+      <div class="log-title">Blacklist Operations</div>
+      <div class="check-line"><div class="check ok">✓</div><span>Access token added to blacklist</span></div>
+      <div class="check-line"><div class="check ok">✓</div><span>Refresh token marked as revoked</span></div>
+      <div class="check-line"><div class="check ok">✓</div><span>Session terminated for ${
+        payload ? payload.name : "user"
+      }</span></div>
+    </div>
+    <div class="log-section success">
+      <div class="log-title success">Response 200 OK</div>
+      <div class="json-block">${jsonHtml({
+        status: "success",
+        message: "Logged out successfully",
+        blacklisted_tokens: 1,
+      })}</div>
+    </div>
+    <div class="log-section warn">
+      <div class="log-title warn">⚠ Note: Using blacklisted token now returns 401</div>
+      <div style="font-size:11px;color:var(--dim)">Previous token is invalidated — click "Send Request" to verify</div>
+    </div>`);
+      }
+
+      updateTokenUI();
+    </script>
+
+    
+  </body>
+</html>

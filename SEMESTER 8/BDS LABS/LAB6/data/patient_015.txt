@@ -1,0 +1,5 @@
+Patient ID: 6550 | Age: 46 | Date: 2025-01-18 | Doctor: dr_reddy
+Diagnoses: hypertension
+Medications: losartan
+Procedures: ecg
+Notes: Patient reported persistent high blood pressure readings at home. ECG evaluation performed. Losartan prescribed.

@@ -1,0 +1,5 @@
+Patient ID: 6555 | Age: 61 | Date: 2025-01-23 | Doctor: dr_chatterjee
+Diagnoses: hypertension
+Medications: amlodipine
+Procedures: ecg
+Notes: Patient presented with headaches and elevated blood pressure readings. Amlodipine prescribed and lifestyle modifications discussed.
